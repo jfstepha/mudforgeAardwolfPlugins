@@ -1,13 +1,15 @@
-[
-  {
-    "id": "vitals-bars",
-    "name": "Vitals Monitor Bars for Aardwolf",
-    "description": "Renders real-time health, mana, and movement bars using GMCP / MSDP protocol tracking.",
-    "author": "Jon Stephan",
-    "version": "1.0.0",
-    "url": "https://github.com/jfstepha/mudforgeAardwolfPlugins",
-    "entry": "Vitals.lua",
-    "dependencies": [],
-    "min_client_version": "2.0.0"
-  }
-]
+{
+  "repository_name": "Aardwolf MudForge Addons",
+  "author": "Jon Stephan",
+  "plugins": [
+    {
+      "id": "vitals",
+      "name": "Vitals",
+      "version": "1.0.0",
+      "description": "Better vitals bars for ardwolf",
+      "entry_file": "plugins/vitals/vitals.lua",
+      "dependencies": [],
+      "min_client_version": "1.1.6"
+    }
+  ]
+}
