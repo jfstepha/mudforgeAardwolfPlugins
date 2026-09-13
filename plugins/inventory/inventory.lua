@@ -1,11 +1,9 @@
-
 plugin = {
   name = "Inventory",
   author = "Jon Stephan",
-  version = "1.0",
+  version = "1.0.1",
   description = "Display inventor"
 }
-
 
 hud = createWidget({ 
     type = "html",
@@ -13,45 +11,59 @@ hud = createWidget({
     size = { width = 400, height = 200 }
 })
 
+istr = ""
+
+lt = addTrigger("(.*)", function(m)
+  -- echo("line matched:" .. m[0])
+  if (m[0] == "{/inventory}") then
+    istr = istr + ""
+  else
+    istr = istr + "<tr><td>* " + m[0] + "</td></tr>"
+  end
+end, {type="regex", omitFromOutput=true})
+
+st = addTrigger("^{inventory}", function()
+    -- echo("regex start matched")
+    istr = "<style> body { font-family: Courier New; font-size: 4pt} </style>"
+    istr = istr + "<table style='color:white;'>"
+    -- echo("enabling lt & et")
+    enableTrigger(lt)
+    enableTrigger(et)
+end, {type = "regex", omitFromOutput=true})
+
+et = addTrigger( "^{/inventory}", function()
+  -- echo("regex end matched")
+  istr = istr + "</table>"
+  -- echo("istr:"+istr)
+  disableTrigger(lt)
+  setWidgetProperty(hud, "content", istr)
+  disableTrigger(st)
+  disableTrigger(et)
+end, {type = "regex", omitFromOutput=true} )
+
+invtrig = addTrigger("^{invitem}.*$", function()
+   -- echo("inviten matched enabling st")
+   send("inventory")
+   enableTrigger(st)
+   istr = ""
+end, {type="regex", omitFromOutput=true})
+
+invtrig2 = addTrigger("^{invmon}.*$", function()
+   --echo("invmon matched enabling st")
+   send("inventory")
+   enableTrigger(st)
+   istr = ""
+end, {type="regex", omitFromOutput=true})
+
 
 function init()
-  utilprint("$G[" .. plugin.name .. " v" .. plugin.version .. "]$W by " .. plugin.author .. " - Installed!")
+  utilprint("$G[" .. plugin.name .. " v" .. plugin.version .. "]$W by " .. plugin.author .. " - Installed.")
+end
 
-local timerId = addTimer (5000, function()
-end)
+function onPluginEnable()
+  -- Triggers are enabled, grab inventory
+  send("inventory")
 
-invtrig = addTrigger("^{invmon}.*$", function()
-   echo("inv updated tick")
-   send("inventory")
+  utilprint("$G[" .. plugin.name ..  " v" .. plugin.version .. "]$W - Enabled.")
 
-   local istr = ""
-
-   st = addTrigger("^{inventory}", function()
-     -- echo("regex start matched")
-     istr = "<style> body { font-family: Courier New; font-size: 4pt} </style>"
-     istr = istr + "<table style='color:white;'>"
-
-     local lt = addTrigger("(.*)", function(m)
-       -- echo("line matched:" .. m[0])
-       if (m[0] == "{/inventory}") then
-         istr = istr + ""
-       else
-         istr = istr + "<tr><td>* " + m[0] + "</td></tr>"
-       end
-     end, {type="regex", omitFromOutput=true})
-
-
-     et = addTrigger( "^{/inventory}", function()
-       -- echo("regex end matched")
-       istr = istr + "</table>"
-       --echo("istr:"+istr)
-       removeTrigger(lt)
-       setWidgetProperty(hud, "content", istr)
-       removeTrigger(st)
-       removeTrigger(et)
-      end, {oneshot = true, type = "regex", omitFromOutput=true} )
-    end, {oneshot = true, type = "regex", omitFromOutput=true})
-
-end, {oneshot = false, type="regex", omitFromOutput=true})
-  
 end
